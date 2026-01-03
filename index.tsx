@@ -1,23 +1,28 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+const container = document.getElementById('root');
+
+if (!container) {
+  throw new Error("Elemento raiz 'root' não encontrado. Verifique o seu index.html.");
 }
 
-// Service Worker Registration for PWA
-if ('serviceWorker' in navigator) {
+const root = ReactDOM.createRoot(container);
+
+// Acesso seguro ao ambiente do Vite
+const env = (import.meta as any).env;
+const isProduction = env ? env.PROD : false;
+
+// Service Worker para PWA
+if ('serviceWorker' in navigator && isProduction) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => {
-      console.log('SW registration failed: ', err);
-    });
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('CaliPRO SW pronto:', reg.scope))
+      .catch(err => console.error('Erro no registro do SW:', err));
   });
 }
 
-const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <App />
